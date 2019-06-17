@@ -2,6 +2,11 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
+Install(){
+pip install shadowsocks
+
+}
+
 Set_server(){
 	
 		echo -e "请输入服务器的IP[server]"
@@ -13,13 +18,13 @@ Set_server(){
 	echo "	================================================" && echo
 }
 
-Set_crypto(){
+Set_method(){
 	
 	echo -e "请输入加密方式[username]（字母/数字，不可与其他账号重复）"
-	read -e -p "(默认: 取消):" username_s
-	[[ -z "$username_s" ]] && echo "已取消..." && exit 0
+	read -e -p "(默认: 取消):" method
+	[[ -z "$method" ]] && echo "已取消..." && exit 0
 	echo && echo "	================================================"
-	echo -e "	加密方式[username]: ${Red_background_prefix} ${username_s} ${Font_color_suffix}"
+	echo -e "	加密方式[username]: ${Red_background_prefix} ${method} ${Font_color_suffix}"
 	echo "	================================================" && echo
 }
 Set_password(){
@@ -40,13 +45,17 @@ download(){
 
 config(){
 
-	echo " #!/bin/sh
-xrdb $HOME/.Xresources
-xsetroot -solid grey
-export XKL_XMODMAP_DISABLE=1
-/etc/X11/Xsession
-lxterminal &
-/usr/bin/lxsession -s LXDE & " > ~/.vnc/xstartup
+	echo "
+	{
+    "server":"${server_s}",
+    "server_port":8388,
+    "local_address": "127.0.0.1",
+    "local_port":1080,
+    "password":"${password_s}",
+    "timeout":300,
+    "method":"${method}"
+}
+	" > /ss/config.json
 }
 
 self-start(){
@@ -57,7 +66,7 @@ self-start(){
 
 run(){
  
-      bash /status/run.sh
+      bash /status/
       
  
 
@@ -65,7 +74,7 @@ run(){
 
 install(){
          Set_server
-	 Set_crypto
+	 Set_method
 	 Set_password
 	 directory
 	 download
